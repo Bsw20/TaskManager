@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 
-extension Task {
+extension Task: TaskCellViewModel {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Task> {
         return NSFetchRequest<Task>(entityName: "Task")

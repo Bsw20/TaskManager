@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3037C21725F2CE6C00941B64 /* Task+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3037C21525F2CE6C00941B64 /* Task+CoreDataClass.swift */; };
 		3037C21825F2CE6C00941B64 /* Task+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3037C21625F2CE6C00941B64 /* Task+CoreDataProperties.swift */; };
+		3037C23225F2D6D500941B64 /* UIApplication + Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3037C23125F2D6D400941B64 /* UIApplication + Extension.swift */; };
 		305300C725F2C3AB002CEE45 /* CustomError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305300C625F2C3AB002CEE45 /* CustomError.swift */; };
 		30E02EEC25F247ED00571ED4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E02EEB25F247ED00571ED4 /* AppDelegate.swift */; };
 		30E02EEE25F247ED00571ED4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E02EED25F247ED00571ED4 /* SceneDelegate.swift */; };
@@ -29,6 +30,7 @@
 /* Begin PBXFileReference section */
 		3037C21525F2CE6C00941B64 /* Task+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Task+CoreDataClass.swift"; path = "TaskManager/CoreData/Task+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		3037C21625F2CE6C00941B64 /* Task+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Task+CoreDataProperties.swift"; path = "TaskManager/CoreData/Task+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		3037C23125F2D6D400941B64 /* UIApplication + Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication + Extension.swift"; sourceTree = "<group>"; };
 		305300C625F2C3AB002CEE45 /* CustomError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomError.swift; sourceTree = "<group>"; };
 		30E02EE825F247ED00571ED4 /* TaskManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TaskManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30E02EEB25F247ED00571ED4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 			children = (
 				30E02F1925F2A4B400571ED4 /* UIFont + Extension.swift */,
 				30E02F2925F2AC9200571ED4 /* UITextField + Extension.swift */,
+				3037C23125F2D6D400941B64 /* UIApplication + Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 				30E02F2A25F2AC9200571ED4 /* UITextField + Extension.swift in Sources */,
 				3037C21725F2CE6C00941B64 /* Task+CoreDataClass.swift in Sources */,
 				30E02EEC25F247ED00571ED4 /* AppDelegate.swift in Sources */,
+				3037C23225F2D6D500941B64 /* UIApplication + Extension.swift in Sources */,
 				3037C21825F2CE6C00941B64 /* Task+CoreDataProperties.swift in Sources */,
 				30E02EEE25F247ED00571ED4 /* SceneDelegate.swift in Sources */,
 				30E02F2425F2AA2A00571ED4 /* DetailsViewController.swift in Sources */,

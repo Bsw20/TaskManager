@@ -11,6 +11,8 @@ import SnapKit
 
 class TasksViewController: UIViewController {
     //MARK: - Variables
+    private var service: CoreDataManager = CoreDataManager.shared
+    private var tasks: [Task] = []
     //MARK: - Contols
     private var table: UITableView = {
         let view = UITableView(frame: .zero, style: .plain)
@@ -27,7 +29,26 @@ class TasksViewController: UIViewController {
         
         setupUI()
         setupConstraints()
+        
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        service.retrieveTasks(predicate: nil) {[weak self] (result) in
+            switch result {
+            
+            case .success(let tasks):
+                DispatchQueue.main.async {
+                    self?.tasks = tasks
+                    self?.table.reloadData()
+                }
+            case .failure(let error):
+                UIApplication.showAlert(title: "Ошибка!", message: error.localizedDescription)
+            }
+        } 
+    }
+    
+    
     
     //MARK: - Funcs
     private func setupUI() {
@@ -42,7 +63,7 @@ class TasksViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus")?.withTintColor(.lightGray),
                                                             style: .plain,
                                                             target: self,
-                                                            action: #selector(filterButtonTapped))
+                                                            action: #selector(plusButtonTapped))
         
         table.dataSource = self
         table.delegate = self
@@ -53,32 +74,76 @@ class TasksViewController: UIViewController {
         table.separatorStyle = .singleLine
     }
     
+    private func updateTasks(result: Result<[Task], Error>) {
+        switch result {
+        
+        case .success(let tasks):
+            DispatchQueue.main.async {
+                self.tasks = tasks
+                self.table.reloadData()
+            }
+        case .failure(let error):
+            UIApplication.showAlert(title: "Ошибка!", message: error.localizedDescription)
+        }
+    }
     //MARK: - Objc funcs
     @objc private func filterButtonTapped() {
-        print(#function)
+        let ac = UIAlertController(title: "Filter tasks...", message: nil,
+                                   preferredStyle: .actionSheet)
+        
+        ac.addAction(UIAlertAction(title: "Show new", style: .default)
+        { [unowned self] _ in
+            service.retrieveTasks(predicate: NSPredicate(format: "taskStatus == '\(TaskStatus.new.rawValue)'")) { (result) in
+                updateTasks(result: result)
+            }
+        })
+        
+        ac.addAction(UIAlertAction(title: "Show in process", style: .default)
+        { [unowned self] _ in
+            service.retrieveTasks(predicate: NSPredicate(format: "taskStatus == '\(TaskStatus.inProcess.rawValue)'")) { (result) in
+                updateTasks(result: result)
+            }
+        })
+        
+        ac.addAction(UIAlertAction(title: "Show completed", style: .default)
+        { [unowned self] _ in
+            service.retrieveTasks(predicate: NSPredicate(format: "taskStatus == '\(TaskStatus.completed.rawValue)'")) { (result) in
+                updateTasks(result: result)
+            }
+        })
+        
+        ac.addAction(UIAlertAction(title: "Show all", style: .default)
+        { [unowned self] _ in
+            service.retrieveTasks(predicate: nil) { (result) in
+                updateTasks(result: result)
+            }
+        })
+        
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(ac, animated: true)
     }
     
     //MARK: - Objc funcs
     @objc private func plusButtonTapped() {
-        print(#function)
+        navigationController?.pushViewController(DetailsViewController(type: .createTask), animated: true)
     }
 }
 
 //MARK: - CollectionView Delegate&DataSource
 extension TasksViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return tasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.reuseId, for: indexPath) as? TaskCell else {
             fatalError("Can't cast to ImageCell")
         }
-//        cell.configure(model: model.images[indexPath.item])
+        cell.configure(model: tasks[indexPath.item])
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = DetailsViewController(type: .createTask)
+        let vc = DetailsViewController(type: .editTask(task: tasks[indexPath.item]))
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -98,16 +163,11 @@ extension TasksViewController: UITableViewDelegate, UITableViewDataSource {
         guard editingStyle == .delete else {
             fatalError()
         }
-        // удаление ячейки + удаление из модели
         tableView.beginUpdates()
-        
+        service.deleteTask(task: tasks[indexPath.item])
         tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
         
-//        eventsList.remove(at: indexPath.row)
-//        event.saveData()
-        tableView.endUpdates() //завершить обновление
-
-//        delegate?.refreshUI() // обновить родительское окно
+        tableView.endUpdates()
     }
     
 }

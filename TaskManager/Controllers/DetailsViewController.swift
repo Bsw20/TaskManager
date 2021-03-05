@@ -46,6 +46,7 @@ class DetailsViewController: UIViewController {
     private var segmentedControl: UISegmentedControl = {
         let sc = UISegmentedControl(items: TaskStatus.allCases.map{$0.description()})
         sc.translatesAutoresizingMaskIntoConstraints = false
+        sc.selectedSegmentIndex = 0
         return sc
     }()
     //MARK: - Lyfycycle
@@ -77,10 +78,48 @@ class DetailsViewController: UIViewController {
     //MARK: - Funcs
     private func configure() {
 //        datePicker?.addTarget(self, action: #selector(handleDateSelection), for: .valueChanged)
+        switch type {
+        case .createTask:
+            break
+        case .editTask(task: let task):
+            guard let status = task.taskStatus,
+                  let index = TaskStatus.init(rawValue: status)?.index(),
+                  let title = task.title,
+                  let comment = task.comment,
+                  let date = task.date else {
+                fatalError("incorrect model")
+            }
+            segmentedControl.selectedSegmentIndex = index
+            titleTextView.setText(newText: title)
+            datePicker.setDate(date, animated: false)
+            commentTextView.text = comment
+        }
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveButtonTapped))
     }
     
     //MARK: - Objc funcs
-//    @objc private func handleDateSelection
+    @objc private func saveButtonTapped() {
+        guard !titleTextView.isEmpty() && commentTextView.text != "" && commentTextView.text != nil else {
+            UIApplication.showAlert(title: "Ошибка!", message: "Не все поля заполнены")
+            return
+        }
+        model.date = datePicker.date
+        model.title = titleTextView.getText()
+        model.taskStatus = segmentedControl.titleForSegment(at: segmentedControl.selectedSegmentIndex)
+        model.comment = commentTextView.text
+        service.saveContext { [weak self](result) in
+            switch result {
+            
+            case .success():
+                DispatchQueue.main.async {
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            case .failure(let error):
+                UIApplication.showAlert(title: "Ошибка!", message: error.localizedDescription)
+            }
+        }
+    }
 }
 
 //MARK: - Constraints
@@ -95,6 +134,24 @@ extension DetailsViewController {
             make.left.equalTo(view.safeAreaLayoutGuide).offset(10)
             make.right.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
+            make.height.equalTo(40)
+        }
+        datePicker.snp.makeConstraints { (make) in
+            make.top.equalTo(titleTextView.snp.bottom).offset(10)
+            make.left.right.equalToSuperview()
+        }
+        
+        segmentedControl.snp.makeConstraints { (make) in
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().inset(10)
+            make.top.equalTo(datePicker.snp.bottom)
+            make.height.equalTo(40)
+        }
+        
+        commentTextView.snp.makeConstraints { (make) in
+            make.left.right.equalTo(segmentedControl)
+            make.top.equalTo(segmentedControl.snp.bottom).offset(10)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(10)
         }
         
     }

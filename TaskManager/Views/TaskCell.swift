@@ -9,10 +9,9 @@ import Foundation
 import UIKit
 
 protocol TaskCellViewModel {
-    var taskStatus: TaskStatus { get }
-    var title: String { get }
-    var date: Date { get }
-    var comment: String { get }
+    var title: String? { get }
+    var date: Date? { get }
+    var comment: String? { get }
 }
 
 class TaskCell: UITableViewCell {
@@ -68,7 +67,11 @@ class TaskCell: UITableViewCell {
     public func configure(model: TaskCellViewModel) {
         titleLabel.text = model.title
         commentLabel.text = model.comment
-        dateLabel.text = DateFormatter().string(from: model.date)
+        if let date = model.date {
+            dateLabel.text = DateFormatter().string(from: date)
+        } else {
+            dateLabel.text = ""
+        }
     }
 }
 

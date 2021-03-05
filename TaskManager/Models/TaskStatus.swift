@@ -8,10 +8,10 @@
 import Foundation
 import UIKit
 
-enum TaskStatus: Int, CaseIterable {
-    case new
-    case inProcess
-    case completed
+enum TaskStatus: String, CaseIterable {
+    case new = "new"
+    case inProcess = "in process"
+    case completed = "completed"
     
     func description() -> String {
         switch self {
@@ -22,6 +22,18 @@ enum TaskStatus: Int, CaseIterable {
             return "in process"
         case .completed:
             return "completed"
+        }
+    }
+    
+    func index() -> Int {
+        switch self {
+        
+        case .new:
+            return 0
+        case .inProcess:
+            return 1
+        case .completed:
+            return 2
         }
     }
 }
