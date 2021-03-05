@@ -15,64 +15,88 @@ protocol TaskCellViewModel {
     var comment: String { get }
 }
 
-class TaskCell: UICollectionViewCell {
+class TaskCell: UITableViewCell {
     //MARK: - Variables
     public static let reuseId = "TaskCell"
-    
-    
+
     //MARK: - Controls
+    private var titleLabel: UILabel = {
+       let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 1
+        label.text = "Сделать дз по алгосам"
+        label.font = label.font.withWeight(.medium)
+        return label
+    }()
+    
+    private var commentLabel: UILabel = {
+       let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 1
+        label.text = "Оно оч сложное, начать делать за несколько дней"
+        label.textColor = .lightGray
+        return label
+    }()
+    
+    private var dateLabel: UILabel = {
+       let label = UILabel()
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd HH:mm"
+        label.text = df.string(from: Date())
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 1
+        label.textAlignment = .right
+        label.font = UIFont.systemFont(ofSize: 15, weight: .light)
+        return label
+    }()
     
     //MARK: - Lifecycle
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        backgroundColor = #colorLiteral(red: 0.6242458093, green: 0.6221778342, blue: 0.6779795175, alpha: 1)
-        
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
+        selectionStyle = .none
+        setupConstraints()
     }
+    
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    override func prepareForReuse() {
-//        super.prepareForReuse()
-//        imageView.resetUrl()
-//        for view in subviews {
-//            view.removeFromSuperview()
-//        }
-//    }
-    
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        if scrollView.contentSize.height > scrollView.frame.height {
-//            scrollView.isUserInteractionEnabled = true
-//        } else {
-//            scrollView.isUserInteractionEnabled = false
-//        }
-//    }
-    
     //MARK: - Funcs
-//    public func configure(model: ImageCellViewModel) {
-//        imageView.set(imageURL: model.url)
-//        setupConstraints(model: model)
-//    }
+    public func configure(model: TaskCellViewModel) {
+        titleLabel.text = model.title
+        commentLabel.text = model.comment
+        dateLabel.text = DateFormatter().string(from: model.date)
+    }
 }
 
-////MARK: - Constraints
-//extension ImageCell {
-//    private func setupConstraints(model: ImageCellViewModel) {
-//        addSubview(scrollView)
-//        scrollView.snp.makeConstraints { (make) in
-//            make.edges.equalToSuperview()
-//        }
-//
-//        scrollView.addSubview(imageView)
-//        imageView.snp.makeConstraints { (make) in
-//            make.top.left.equalToSuperview()
-//            make.width.equalTo(snp.width)
-//            //Высчитываем отношение высоты к ширине; ширина фиксированная(равна ширине superview) => легко находим высоту
-//            let ratio = CGFloat(model.height) / CGFloat(model.width)
-//            make.height.equalTo(snp.width).multipliedBy(ratio)
-//            make.bottom.equalToSuperview()
-//        }
-//    }
-//}
+//MARK: - Constraints
+extension TaskCell {
+    private func setupConstraints(){
+        let leftOffset = 10
+        let rightInset = 10
+        addSubview(titleLabel)
+        addSubview(commentLabel)
+        addSubview(dateLabel)
+        
+        dateLabel.snp.makeConstraints { (make) in
+            make.right.equalToSuperview().inset(rightInset)
+            make.top.equalToSuperview().offset(5)
+        }
+        
+        
+        titleLabel.snp.makeConstraints { (make) in
+            make.left.equalToSuperview().offset(leftOffset)
+            make.top.equalToSuperview().offset(5)
+            make.right.equalTo(dateLabel.snp.left)
+        }
+        
+        commentLabel.snp.makeConstraints { (make) in
+            make.left.equalToSuperview().offset(leftOffset)
+            make.bottom.equalToSuperview().inset(5)
+            make.right.equalToSuperview().inset(rightInset)
+        }
+    }
+}

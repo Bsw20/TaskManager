@@ -11,14 +11,14 @@ import SnapKit
 
 class TasksViewController: UIViewController {
     //MARK: - Variables
-    
     //MARK: - Contols
-    private var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        collectionView.backgroundColor = .clear
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
+    private var table: UITableView = {
+        let view = UITableView(frame: .zero, style: .plain)
+        view.backgroundColor = .clear
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
+    
     
     //MARK: - Lyfecycle
     override func viewDidLoad() {
@@ -44,12 +44,13 @@ class TasksViewController: UIViewController {
                                                             target: self,
                                                             action: #selector(filterButtonTapped))
         
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(TaskCell.self, forCellWithReuseIdentifier: TaskCell.reuseId)
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
-        collectionView.alwaysBounceHorizontal = true
+        table.dataSource = self
+        table.delegate = self
+        table.register(TaskCell.self, forCellReuseIdentifier: TaskCell.reuseId)
+        table.showsHorizontalScrollIndicator = false
+        table.alwaysBounceVertical = true
+        table.estimatedRowHeight = 66
+        table.separatorStyle = .singleLine
     }
     
     //MARK: - Objc funcs
@@ -64,33 +65,59 @@ class TasksViewController: UIViewController {
 }
 
 //MARK: - CollectionView Delegate&DataSource
-extension TasksViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+extension TasksViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 5
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TaskCell.reuseId, for: indexPath) as? TaskCell else {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.reuseId, for: indexPath) as? TaskCell else {
             fatalError("Can't cast to ImageCell")
         }
 //        cell.configure(model: model.images[indexPath.item])
         return cell
     }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = DetailsViewController(type: .createTask)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 66
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .delete
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        guard editingStyle == .delete else {
+            fatalError()
+        }
+        // удаление ячейки + удаление из модели
+        tableView.beginUpdates()
+        
+        tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
+        
+//        eventsList.remove(at: indexPath.row)
+//        event.saveData()
+        tableView.endUpdates() //завершить обновление
+
+//        delegate?.refreshUI() // обновить родительское окно
+    }
     
 }
 
-//MARK: - UICollectionViewDelegateFlowLayout
-extension TasksViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: , height: 66)
-    }
-}
 
 //MARK: - Constraints
 extension TasksViewController {
     private func setupConstraints() {
-        view.addSubview(collectionView)
-        collectionView.snp.makeConstraints { (make) in
+        view.addSubview(table)
+        table.snp.makeConstraints { (make) in
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
     }
