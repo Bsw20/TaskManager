@@ -20,7 +20,7 @@ struct CoreDataManager {
     public func retrieveTasks(predicate: NSPredicate?,  completion: @escaping (Result<[Task], Error>) -> Void){
         let request: NSFetchRequest<Task> = Task.fetchRequest()
         
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
         request.predicate = predicate
         do {
             let tasks = try container.viewContext.fetch(request)

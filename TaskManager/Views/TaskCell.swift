@@ -68,7 +68,10 @@ class TaskCell: UITableViewCell {
         titleLabel.text = model.title
         commentLabel.text = model.comment
         if let date = model.date {
-            dateLabel.text = DateFormatter().string(from: date)
+            print(model.date)
+            let df = DateFormatter()
+            df.dateFormat = "yyyy-MM-dd HH:mm"
+            dateLabel.text = df.string(from: date)
         } else {
             dateLabel.text = ""
         }
