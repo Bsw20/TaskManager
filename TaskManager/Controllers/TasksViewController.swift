@@ -163,10 +163,11 @@ extension TasksViewController: UITableViewDelegate, UITableViewDataSource {
         guard editingStyle == .delete else {
             fatalError()
         }
+        let task = tasks[indexPath.item]
         tableView.beginUpdates()
-        service.deleteTask(task: tasks[indexPath.item])
+        tasks.remove(at: indexPath.item)
+        service.deleteTask(task: task)
         tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
-        
         tableView.endUpdates()
     }
     
